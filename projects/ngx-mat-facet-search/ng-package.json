@@ -8,6 +8,6 @@
     }
   },
   "assets": [
-    "_facet-search-theme.scss"
+    "src/lib/_facet-search-theme.scss"
   ]
 }

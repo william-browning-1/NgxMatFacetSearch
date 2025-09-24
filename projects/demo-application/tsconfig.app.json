@@ -1,6 +1,10 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
+  "compilerOptions": {  "paths": {
+    "ngx-mat-facet-search": [
+      "dist/ngx-mat-facet-search"
+    ]
+  },
     "outDir": "../../out-tsc/app",
     "types": []
   },
