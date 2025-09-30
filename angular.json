@@ -188,6 +188,5 @@
   },
   "cli": {
     "analytics": false
-  },
-  "defaultProject": "ngx-mat-facet-search"
+  }
 }
