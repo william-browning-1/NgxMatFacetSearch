@@ -7,12 +7,11 @@
 
   <div class="content-wrapper">
 
-    <mat-chip-list #chipList [multiple]="false">
+    <mat-chip-grid #chipList>
 
-      <mat-chip @chipAnimation *ngFor="let facet of selectedFacets" [color]="facet.readonly ? 'accent' : undefined"
-                class="facet-chip"
-                (selectionChange)="chipSelected($event, facet)" (click)="selectedFacet = facet"
-                [selected]="facet === selectedFacet"
+  <mat-chip-row @chipAnimation *ngFor="let facet of selectedFacets" [color]="facet.readonly ? 'accent' : undefined"
+         class="facet-chip"
+         (click)="chipClicked($event, facet)"
                 matTooltip="{{facet.labelText + (facet.description ? ': ' + facet.description : '')}}"
                 matTooltipShowDelay="1000">
         <mat-icon *ngIf="facet.icon" class="inline-chip-icon">{{facet.icon}}</mat-icon>
@@ -68,15 +67,16 @@
 					</span>
         </ng-container>
 
+
         <mat-icon *ngIf="!facet.readonly" matChipRemove (click)="removeFacet(facet)">cancel</mat-icon>
 
-      </mat-chip>
+      </mat-chip-row>
 
-      <mat-chip class="filter-input-container" disableRipple disabled @chipAnimation>
+      <mat-chip-row class="filter-input-container" disableRipple disabled @chipAnimation>
 
         <mat-icon class="add-icon" (click)="focus($event)">add</mat-icon>
 
-        <input #filterInput [matChipInputFor]="chipList" class="filter-input" [placeholder]="placeholder"
+  <input #filterInput [matChipInputFor]="$any(chipList)" class="filter-input" [placeholder]="placeholder"
                [matChipInputAddOnBlur]="false" [matAutocomplete]="auto">
 
         <mat-autocomplete #auto="matAutocomplete" class="mat-facet-autocomplete" (optionSelected)="autoCompleteSelected($event)"
@@ -87,9 +87,9 @@
           </mat-option>
         </mat-autocomplete>
 
-      </mat-chip>
+      </mat-chip-row>
 
-    </mat-chip-list>
+    </mat-chip-grid>
 
   </div>
 

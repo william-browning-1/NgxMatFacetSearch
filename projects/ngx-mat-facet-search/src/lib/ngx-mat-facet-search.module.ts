@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {NgModule, NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {NgxMatFacetSearchComponent} from './ngx-mat-facet-search.component';
 import {FacetDetailsModalComponent} from './modals/facet-details-modal/facet-details-modal.component';
 import {MatIconModule} from '@angular/material/icon';
@@ -48,12 +48,13 @@ import {FocusOnShowDirective} from './directives/focus-on-show.directive';
         MatNativeDateModule,
         MatProgressSpinnerModule,
         OverlayModule,
-        PortalModule
+        PortalModule,
+    // The main component is declared below so it receives the module imports
+        FilterPipe,
+        CSVPipe,
+        KeysPipe
     ],
     declarations: [
-        CSVPipe,
-        FilterPipe,
-        KeysPipe,
         NgxMatFacetSearchComponent,
         FacetDetailsModalComponent,
         FacetModalComponent,

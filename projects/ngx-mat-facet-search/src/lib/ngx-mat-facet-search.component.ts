@@ -10,10 +10,18 @@ import {
   ViewChild,
   ViewContainerRef
 } from '@angular/core';
-import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from '@angular/material/autocomplete';
+import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatAutocompleteModule} from '@angular/material/autocomplete';
 import {Facet, FacetConfig, FacetDataType, FacetFilterType, FacetIdentifierStrategy, FacetResultType} from './models';
-import {MatChipSelectionChange} from '@angular/material/chips';
+import {MatChipSelectionChange, MatChipsModule} from '@angular/material/chips';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTooltipModule} from '@angular/material/tooltip';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {FacetDetailsModalComponent} from './modals/facet-details-modal/facet-details-modal.component';
+// ...existing imports...
 import {fromEvent} from 'rxjs';
 import {debounceTime, distinctUntilChanged, filter, map} from 'rxjs/operators';
 import {FACET_CONFIG} from './ngx-mat-facet.config';
@@ -25,6 +33,8 @@ import {FacetStorageService} from './services/facet-storage.service';
 
 @Component({
   selector: 'ngx-mat-facet-search',
+  // Component is declared in the library NgModule; module imports provide
+  // Angular Material and pipe dependencies.
   templateUrl: 'ngx-mat-facet-search.component.html',
   styleUrls: ['./ngx-mat-facet-search.component.scss'],
   animations: [
@@ -46,22 +56,11 @@ export class NgxMatFacetSearchComponent implements OnInit, AfterViewInit {
   @Input() chipLabelsEnabled = true;
   @Input() identifier: string | null;
 
-  @Input() set source(facets: Facet[]) {
-    if (!!facets && facets.length > 0) {
-      this.sourceFacets = facets;
-
-      this.selectedFacets = this.selectedFacets.filter(s => facets.some(f => f.name === s.name));
-      this.availableFacets = facets.map(f => Object.assign({}, f)).filter(f => !this.selectedFacets.some(s => s.name === f.name));
-      this.filteredFacets = this.availableFacets;
-
-      this.updateSelectedFacets();
-    }
-  }
-
   @Output() searchUpdated: EventEmitter<Facet[]>;
 
   @ViewChild('filterInput') filterInput: ElementRef;
   @ViewChild(MatAutocompleteTrigger, {read: MatAutocompleteTrigger}) inputAutoComplete: MatAutocompleteTrigger;
+
 
   public selectedFacet: Facet | undefined;
   public selectedFacets: Facet[] = [];
@@ -76,6 +75,7 @@ export class NgxMatFacetSearchComponent implements OnInit, AfterViewInit {
   private identifierStrategy: FacetIdentifierStrategy;
   private injectorRef: VCRefInjector;
 
+
   constructor(@Inject(FACET_CONFIG) configuration: FacetConfig,
               public modal: FacetModalService,
               private storageService: FacetStorageService,
@@ -88,6 +88,18 @@ export class NgxMatFacetSearchComponent implements OnInit, AfterViewInit {
     this.searchUpdated.subscribe(facets => {
       this.loggingCallback('Facet(s) updated', facets);
     });
+  }
+
+  @Input() set source(facets: Facet[]) {
+    if (!!facets && facets.length > 0) {
+      this.sourceFacets = facets;
+
+      this.selectedFacets = this.selectedFacets.filter(s => facets.some(f => f.name === s.name));
+      this.availableFacets = facets.map(f => Object.assign({}, f)).filter(f => !this.selectedFacets.some(s => s.name === f.name));
+      this.filteredFacets = this.availableFacets;
+
+      this.updateSelectedFacets();
+    }
   }
 
   private static getFixedURL(): string {
@@ -126,9 +138,22 @@ export class NgxMatFacetSearchComponent implements OnInit, AfterViewInit {
     }
   }
 
-  chipSelected(event: MatChipSelectionChange, facet: Facet): void {
-    if (event.selected && !facet.readonly) {
-      const elementRef = event.source._elementRef.nativeElement;
+  chipClicked(event: MouseEvent, facet: Facet): void {
+    event.stopPropagation();
+    this.selectedFacet = facet;
+    if (!facet.readonly) {
+      // position roughly below the clicked element
+      const target = event.target as HTMLElement;
+      const rect = target.getBoundingClientRect();
+      this.facetSelected(facet, {top: rect.top - 3, left: rect.left}, true, target);
+    }
+  }
+
+  chipSelected(event: Event | MatChipSelectionChange, facet: Facet): void {
+    // Accept Event as well as MatChipSelectionChange to satisfy template type-check
+    const selection = (event as MatChipSelectionChange);
+    if (selection && selection.selected && !facet.readonly) {
+      const elementRef = selection.source._elementRef.nativeElement;
 
       this.facetSelected(facet, {
         top: (elementRef.clientHeight - 5),

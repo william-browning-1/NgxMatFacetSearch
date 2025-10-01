@@ -2,7 +2,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'csv',
-  pure: false
+  pure: false,
+  standalone: true
 })
 export class CSVPipe implements PipeTransform {
 
